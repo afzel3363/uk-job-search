@@ -1,0 +1,36 @@
+name: Daily Digital Marketing Jobs → WhatsApp
+
+on:
+  schedule:
+    # 9:00 AM BST (UTC+1 in summer). Change to '0 9 * * *' Nov–Mar (GMT).
+    - cron: '0 8 * * *'
+
+  # Run manually from the Actions tab to test
+  workflow_dispatch:
+
+jobs:
+  search-and-notify:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install anthropic twilio requests
+
+      - name: Run job search, update server, send WhatsApp
+        env:
+          ANTHROPIC_API_KEY:  ${{ secrets.ANTHROPIC_API_KEY }}
+          TWILIO_ACCOUNT_SID: ${{ secrets.TWILIO_ACCOUNT_SID }}
+          TWILIO_AUTH_TOKEN:  ${{ secrets.TWILIO_AUTH_TOKEN }}
+          TWILIO_FROM:        ${{ secrets.TWILIO_FROM }}
+          WHATSAPP_TO:        ${{ secrets.WHATSAPP_TO }}
+          SERVER_URL:         ${{ secrets.SERVER_URL }}
+          UPDATE_SECRET:      ${{ secrets.UPDATE_SECRET }}
+        run: python job_search.py
